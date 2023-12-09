@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+    <style>
+        body {
+            background-color: #f5f5f5;
+        }
+
+        .navbar {
+            background-color: #f1f1f1;
+        }
+
+        .navbar-brand, .navbar-nav .nav-link, .navbar-text {
+            color: #ffffff;
+        }
+
+        .container {
+            margin-top: 20px;
+        }
+
+        .user-table {
+            margin-top: 20px;
+        }
+
+        .sidebar {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            background-color: #111;
+            padding-top: 20px;
+        }
+
+        .sidebar a {
+            padding: 8px 8px 8px 32px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #818181;
+            display: block;
+        }
+
+        .sidebar a:hover {
+            color: #f1f1f1;
+        }
+
+        .sidebar a.active {
+            background-color: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<!-- Sidebar Navigation -->
+<div class="sidebar">
+    <a th:href="@{/AdminDashboard}" class="font-weight-bolder my-2">Dashboard</a>
+    <a href="/user/list" class="font-weight-bolder my-5">Manage Users</a>
+    <a th:href="@{/diseases/list}" class="active font-weight-bolder my-5">Manage Diseases</a>
+    <a href="/patients/list" class="active font-weight-bolder my-5">Manage Patients</a>
+    <a href="/logout" class="font-weight-bolder my-5">Logout</a>
+</div>
+
+
+<div class="container">
+
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <span class="navbar-text pr-3" id="loggedUser">Logged User</span>
+                    <a class="nav-link" href="#" id="logoutLink" style="display: none;">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+
+        <div class="d-inline-flex">
+            <div><h2 class="h2 text-center">Patient Management</h2></div>
+            <div class="mr-auto text-right">
+                <form id="searchForm" class="form-inline mb-3" th:action="@{/patients/searchBySymptom}" method="get">
+                    <label for="symptom" class="mr-2"></label>
+                    <input type="text" class="form-control mr-2" id="symptom" name="symptom" placeholder="Enter Symptom">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </form>
+            </div>
+        </div>
+
+
+        <div th:if="${message}" class="alert alert-info">
+            [[${message}]]
+        </div>
+        <div th:if="${message}" class="alert alert-danger">
+            [[${message}]]
+        </div>
+
+
+        <!-- Add Patient Form -->
+        <div class="card my-4">
+            <div class="card-header">
+                <h4 class="card-title">Add New Patient</h4>
+            </div>
+            <div class="card-body">
+                <form id="addPatientForm" th:action="@{/patients/save}" method="post">
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="name">Name</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="email">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="age">Age</label>
+                            <input type="number" class="form-control" id="age" name="age" required>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="gender">Gender</label>
+                            <select class="form-control" id="gender" name="gender" required>
+                                <option value="MALE">Male</option>
+                                <option value="FEMALE">Female</option>
+                                <option value="OTHER">Other</option>
+                            </select>
+                        </div>
+                    </div>
+<!--                    <div class="form-row">-->
+<!--                        <div class="form-group col-md-6">-->
+<!--                            <label for="symptoms">Symptoms</label>-->
+<!--                            <input type="text" class="form-control" id="symptoms" name="symptoms" required>-->
+<!--                        </div>-->
+<!--                    </div>-->
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="symptoms">Symptoms</label>
+                            <input type="text" class="form-control" id="symptoms" name="symptoms" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-success">Add Patient</button>
+                </form>
+            </div>
+        </div>
+ m
+
+        <table class="table user-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Email</th>
+                <th>Gender</th>
+                <th>Disease</th>
+                <th>Symptoms</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="patient : ${patients}">
+                <td th:text="${patient.id}"></td>
+                <td th:text="${patient.name}"></td>
+                <td th:text="${patient.age}"></td>
+                <td th:text="${patient.email}"></td>
+                <td th:text="${patient.gender}"></td>
+                <td>
+                    <span th:if="${patient.disease != null}" th:text="${patient.disease.name}"></span>
+                    <span th:unless="${patient.disease != null}">Undefined disease</span>
+                </td>
+                <td th:text="${patient.symptoms}"></td>
+                <td>
+                    <a class="btn btn-primary btn-sm" th:href="@{'/patients/patient/edit/' + ${patient.id}}">Edit</a>
+
+                    <a class="btn btn-danger" th:href="@{'/patients/delete/' + ${patient.id}}">Delete</a>
+
+                </td>
+
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+<!-- Link to Bootstrap JS and Popper.js -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+
+<!-- Custom Script -->
+<script>
+    var loggedUser = "Admin";
+
+    document.getElementById("loggedUser").innerText = "Logged in as " + loggedUser;
+
+    document.getElementById("loggedUser").addEventListener("click", function () {
+        document.getElementById("logoutLink").style.display = "block";
+    });
+
+
+
+</script>
+</body>
+</html>

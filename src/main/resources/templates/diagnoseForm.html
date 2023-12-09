@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Diagnosis</title>
+</head>
+<body>
+
+<h2>Medical Diagnosis Form</h2>
+
+<form th:action="@{/medical/diagnose}" method="post" th:object="${user}">
+    <input type="hidden" th:field="*{id}">
+    <label>Symptoms:</label>
+    <textarea name="symptoms" rows="4" cols="50" required></textarea>
+    <br>
+    <button type="submit">Diagnose</button>
+</form>
+
+</body>
+</html>
